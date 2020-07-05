@@ -97,25 +97,41 @@ brew install ghostscript
 
 ![QuickAction-3](images/solution-quickaction-3.png)
 
-5) Inside of your 'Run Shell Script' action that you have added, choose '/bin/bash' from your shell options in the drop down
+5) Inside of your 'Run Shell Script' action that you have added, choose '/bin/bash' from your shell options in the drop down, and Pass input: 'as arguments'
 
 ![QuickAction-4](images/solution-quickaction-4.png)
 
 6) Add the following lines:
 
 ```bash
-export PATH=/usr/local/bin:$PATH
+# Change "YOUR_PRINTER_NAME" to the name of your printer
+PRINTER_NAME=YOUR_PRINTER_NAME
 
+# DO NOT MODIFY ANYTHING BELOW THIS LINE
+export PATH=/usr/local/bin:$PATH
 for f in "$@"
 do
-	echo "$f"
-	convert -density 203 "$f" -format png "$f".png
-	lpr -P YOUR_DEVICE_NAME "$f".png
-	rm "$f".png
+	WORKING_DIR=$(dirname "$f")
+	FILE=$(basename "$f")
+	RANDOM_STRING=$(cat /dev/random | LC_CTYPE=C tr -dc "[:alpha:]" | head -c 8)
+
+    # Creates temporary images from pdf with a random string to prevent conflicts
+	convert -density 203 "$f" -format png -strip "$f-$RANDOM_STRING.png"
+
+    # Gets filename(s) with the random string. Multi-page PDFs will output an image per page
+	for i in $(ls "$WORKING_DIR" | grep $RANDOM_STRING)
+	do
+        # Print the image
+		lpr -P $PRINTER_NAME "$WORKING_DIR/$i"
+
+        # Remove the image after it has been transferred to the printer
+		rm "$WORKING_DIR/$i"
+	done
+	
 done
 ```
 
-**IMPORTANT** - Please replace 'YOUR_DEVICE_NAME' with yours. To get your device name, please read the 'Prerequities' area in the beginning of this solution.
+**IMPORTANT** - At the top of the script, please replace 'YOUR_PRINTER_NAME' with your printer name. To get your device name, please read the 'Prerequities' area in the beginning of this solution.
 
 7) File > Save > Type in whatever you want to name this
 
