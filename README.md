@@ -115,19 +115,18 @@ do
 	FILE=$(basename "$f")
 	RANDOM_STRING=$(cat /dev/random | LC_CTYPE=C tr -dc "[:alpha:]" | head -c 8)
 
-    # Creates temporary images from pdf with a random string to prevent conflicts
+	# Creates temporary images from pdf with a random string to prevent conflicts
 	convert -density 203 "$f" -format png -strip "$f-$RANDOM_STRING.png"
 
-    # Gets filename(s) with the random string. Multi-page PDFs will output an image per page
+	# Gets filename(s) with the random string. Multi-page PDFs will output an image per page
 	for i in $(ls "$WORKING_DIR" | grep $RANDOM_STRING)
 	do
-        # Print the image
+		# Print the image
 		lpr -P $PRINTER_NAME "$WORKING_DIR/$i"
 
-        # Remove the image after it has been transferred to the printer
+		# Remove the image after it has been transferred to the printer
 		rm "$WORKING_DIR/$i"
 	done
-	
 done
 ```
 
