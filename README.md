@@ -109,6 +109,7 @@ PRINTER_NAME=YOUR_PRINTER_NAME
 
 # DO NOT MODIFY ANYTHING BELOW THIS LINE
 export PATH=/usr/local/bin:$PATH
+
 for f in "$@"
 do
 	WORKING_DIR=$(dirname "$f")
